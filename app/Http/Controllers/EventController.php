@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use Illuminate\Http\Request;
-
+use Inertia\Inertia;
+use Inertia\Response;
 class EventController extends Controller
 {
     /**
@@ -13,6 +14,9 @@ class EventController extends Controller
     public function index()
     {
         //
+        return Inertia::render('Event/Index', [
+           'events'=> Event::where('status','live')->get()
+        ]);
     }
 
     /**
