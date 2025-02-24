@@ -6,6 +6,7 @@ use App\Models\Event;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+
 class EventController extends Controller
 {
     /**
@@ -13,9 +14,19 @@ class EventController extends Controller
      */
     public function index()
     {
-        //
+        $events = Event::where('status', 'live')->get()->map(function ($event) {
+            return [
+                'id' => $event->id,
+                'title' => $event->name,
+                'start_date' => $event->start_date, // Combine Date & Time
+                'end_date' => $event->end_date, // Combine Date & Time
+                'start_time' => $event->start_time, // Combine Date & Time
+                'end_time' => $event->end_time, // Combine Date & Time
+            ];
+        });
+
         return Inertia::render('Event/Index', [
-           'events'=> Event::where('status','live')->get()
+            'events' => $events
         ]);
     }
 
