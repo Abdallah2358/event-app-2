@@ -1,19 +1,39 @@
 import Modal from "@/Components/Modal";
 import { formatDate } from "@/src/utils/date";
-import { useForm } from "@inertiajs/react";
+import { useForm, usePage } from "@inertiajs/react";
 import { useState } from "react";
+import { toast } from 'react-hot-toast';
 
 export default function EventModal({ event, isOpen, onClose }) {
     const [joined, setJoined] = useState(false);
+    // const { flash } = usePage().props; // Get flash messages
+    const { errors, flash } = usePage().props; // Get errors and flash messages
     const { post } = useForm();
     event.start_date = formatDate(event.start_date);
     event.end_date = formatDate(event.end_date);
     const handleJoin = () => {
         post(route('event.join', event.id), {
+            onSuccess: (data) => {
+                onClose();
+                console.log(data);
+                console.log(flash);
+                if (flash?.success) {
+                    toast.success(flash.success);
+                }
+            },
+            onError: (data) => {
+                onClose();
 
+                if (data?.already_joined) {
+                    toast.error(data.already_joined);
+                }
+                if (data?.event_full) {
+                    toast.error(data.event_full);
+                }
+            },
+            // errorBag: 'joinEvent',
         })
-        setJoined(true);
-        console.log("Joined event:", event.name);
+
     };
 
     const handleCancel = () => {
@@ -44,7 +64,7 @@ export default function EventModal({ event, isOpen, onClose }) {
                             Leave Event
                         </button>
                     )}
-                    <button onClick={() => isOpen = false} className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+                    <button onClick={onClose} className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
                         Cancel
                     </button>
                 </div>
