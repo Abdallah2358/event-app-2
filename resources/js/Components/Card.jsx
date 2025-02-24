@@ -1,8 +1,7 @@
+import { formatDate } from "@/src/utils/date";
+
 export default function Card({ event }) {
-    const formatDate = (date) => {
-        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        return new Date(date).toLocaleDateString("en-US", options)
-    }
+
     return (
         <div className="m-10 p-6 bg-white border border-gray-200 rounded-lg shadow-sm ">
             <a href="#">
