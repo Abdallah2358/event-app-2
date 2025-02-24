@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\IsNovaAdmin;
 use Laravel\Nova\Actions\ActionResource;
 use Laravel\Nova\Http\Middleware\Authenticate;
 use Laravel\Nova\Http\Middleware\AuthenticateSession;
@@ -102,6 +103,7 @@ return [
 
     'middleware' => [
         'web',
+        IsNovaAdmin::class,
         HandleInertiaRequests::class,
         DispatchServingNovaEvent::class,
         BootTools::class,
