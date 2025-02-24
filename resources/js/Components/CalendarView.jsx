@@ -18,9 +18,7 @@ const combineDateTime = (dateStr, timeStr) => {
 
 export default function CalendarView({ events }) {
     // Memoized values for performance optimization
-    const { components, defaultDate, views } = useMemo(() => ({
-        components: {},
-        defaultDate: new Date(), // Default to today
+    const { views } = useMemo(() => ({
         views: ['month', 'week', 'day'], // Ensure Month view is included
     }), []);
     const [currentView, setCurrentView] = useState(Views.MONTH); // Default view is Month
@@ -31,7 +29,6 @@ export default function CalendarView({ events }) {
         return events.flatMap(event => {
             const startTime = event.start_time;
             const endTime = event.end_time;
-
             const startDate = moment(`${event.start_date} ${startTime}`, 'YYYY-MM-DD HH:mm:ss');
             const endDate = moment(`${event.end_date} ${endTime}`, 'YYYY-MM-DD HH:mm:ss');
 
@@ -73,7 +70,6 @@ export default function CalendarView({ events }) {
                         currentDate.add(1, 'day');
                     }
                 }
-
                 return multiDayEvents;
             }
         });
@@ -82,8 +78,6 @@ export default function CalendarView({ events }) {
     return (
         <div className="p-4 bg-white shadow-lg rounded-lg">
             <Calendar
-                components={components}
-                defaultDate={defaultDate}
                 events={formattedEvents}
                 localizer={localizer}
                 views={views} // Ensure Month View is enabled
@@ -99,16 +93,16 @@ export default function CalendarView({ events }) {
     );
 }
 
-// // Define prop types
-// CalendarView.propTypes = {
-//     events: PropTypes.arrayOf(
-//         PropTypes.shape({
-//             id: PropTypes.number.isRequired,
-//             title: PropTypes.string.isRequired,
-//             start_date: PropTypes.string.isRequired,
-//             start_time: PropTypes.string.isRequired,
-//             end_date: PropTypes.string.isRequired,
-//             end_time: PropTypes.string.isRequired,
-//         })
-//     ),
-// };
+// Define prop types
+CalendarView.propTypes = {
+    events: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.number.isRequired,
+            title: PropTypes.string.isRequired,
+            start_date: PropTypes.string.isRequired,
+            start_time: PropTypes.string.isRequired,
+            end_date: PropTypes.string.isRequired,
+            end_time: PropTypes.string.isRequired,
+        })
+    ),
+};
