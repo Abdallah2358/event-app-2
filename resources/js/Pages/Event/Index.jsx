@@ -1,6 +1,6 @@
-import CalendarView from '@/Components/CalendarView';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
+import CalendarView from './Partials/CalendarView';
 
 
 export default function Index({ events }) {

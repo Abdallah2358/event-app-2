@@ -7,6 +7,7 @@ import {
     momentLocalizer,
 } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+import EventModal from './EventModal';
 
 // Set up Moment.js as the localizer
 const localizer = momentLocalizer(moment);
@@ -22,7 +23,12 @@ export default function CalendarView({ events }) {
         views: ['month', 'week', 'day'], // Ensure Month view is included
     }), []);
     const [currentView, setCurrentView] = useState(Views.MONTH); // Default view is Month
-
+    const formatEvent = (event, options = 'single') => {
+        event['allDay'] = false;
+        event['start'] = combineDateTime(event.start_date, event.start_time);
+        event['end'] = combineDateTime(event.end_date, event.end_time);
+        return event;
+    }
     // Convert Laravel events into the correct format
     // Function to properly format multi-day events
     const formatEvents = (events) => {
@@ -31,42 +37,21 @@ export default function CalendarView({ events }) {
             const endTime = event.end_time;
             const startDate = moment(`${event.start_date} ${startTime}`, 'YYYY-MM-DD HH:mm:ss');
             const endDate = moment(`${event.end_date} ${endTime}`, 'YYYY-MM-DD HH:mm:ss');
-
             if (startDate.isSame(endDate, 'day')) {
                 // Single-day event
-                return [{
-                    id: event.id,
-                    title: event.title,
-                    start: combineDateTime(event.start_date, startTime),
-                    end: combineDateTime(event.end_date, endTime),
-
-                }];
+                return [formatEvent(event)];
             } else {
                 // Multi-day event → Break it into separate day-long entries
                 let currentDate = startDate.clone();
-
                 let multiDayEvents = [];
                 if (currentView == 'month') {
-                    multiDayEvents.push(
-                        {
-                            id: event.id,
-                            title: event.title,
-                            start: combineDateTime(event.start_date, startTime),
-                            end: combineDateTime(event.end_date, endTime),
-                        }
-                    )
+                    multiDayEvents.push(formatEvent(event))
                 } else {
-
                     while (currentDate.isSameOrBefore(endDate, 'day')) {
-                        const eventDay = {
-                            id: `${event.id}-${currentDate.format('YYYY-MM-DD')}`,
-                            title: event.title,
-                            start: combineDateTime(currentDate.format('YYYY-MM-DD'), startTime),
-                            end: combineDateTime(currentDate.format('YYYY-MM-DD'), endTime),
-                            allDay: false, // Force all-day event for visual clarity
-                        };
+                        const eventDay = { ...formatEvent(event) };
+                        eventDay['start'] = combineDateTime(currentDate.format('YYYY-MM-DD'), startTime);
+                        eventDay['end'] = combineDateTime(currentDate.format('YYYY-MM-DD'), endTime);
                         multiDayEvents.push(eventDay);
-
                         currentDate.add(1, 'day');
                     }
                 }
@@ -75,6 +60,12 @@ export default function CalendarView({ events }) {
         });
     };
     const formattedEvents = formatEvents(events);
+    const [isOpen, setIsOpen] = useState(false);
+    const [selectedEvent, setSelectedEvent] = useState(null);
+    function handleEventSelect(event) {
+        setSelectedEvent({ ...event });
+        setIsOpen(true);
+    }
     return (
         <div className="p-4 bg-white shadow-lg rounded-lg">
             <Calendar
@@ -85,10 +76,12 @@ export default function CalendarView({ events }) {
                 showMultiDayTimes
                 onView={(view) => setCurrentView(view)} // Update view when changed
                 popup={true}
-                onSelectEvent={(e) => console.log(e)
-                }
+                onSelectEvent={handleEventSelect}
                 style={{ height: '80vh' }}
             />
+            {selectedEvent && (
+                <EventModal event={selectedEvent} isOpen={isOpen} onClose={() => setIsOpen(false)} />
+            )}
         </div>
     );
 }
