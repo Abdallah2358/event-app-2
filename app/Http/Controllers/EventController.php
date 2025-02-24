@@ -15,14 +15,8 @@ class EventController extends Controller
     public function index()
     {
         $events = Event::where('status', 'live')->get()->map(function ($event) {
-            return [
-                'id' => $event->id,
-                'title' => $event->name,
-                'start_date' => $event->start_date, // Combine Date & Time
-                'end_date' => $event->end_date, // Combine Date & Time
-                'start_time' => $event->start_time, // Combine Date & Time
-                'end_time' => $event->end_time, // Combine Date & Time
-            ];
+            $event['title'] = $event->name;
+            return $event;
         });
 
         return Inertia::render('Event/Index', [
@@ -76,5 +70,22 @@ class EventController extends Controller
     public function destroy(Event $event)
     {
         //
+    }
+
+    /**
+     * User Join Event
+     */
+    public function join(Request $request, Event $event)
+    {
+        // dd($event);
+        
+    }
+
+    /**
+     * User Leave Event
+     */
+    public function leave(Request $request, Event $event)
+    {
+        dd($event);
     }
 }
