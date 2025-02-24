@@ -15,7 +15,9 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
         "tightenco/ziggy": "^2.0",
-        "laravel/nova": "^5.0"
+        "laravel/nova": "^5.0",
+        "mostafaznv/nova-map-field": "^4.1"
+
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
