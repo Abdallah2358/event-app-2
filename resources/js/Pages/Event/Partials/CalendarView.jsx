@@ -77,7 +77,7 @@ export default function CalendarView({ events }) {
                 onView={(view) => setCurrentView(view)} // Update view when changed
                 popup={true}
                 onSelectEvent={handleEventSelect}
-                style={{ height: '80vh' }}
+                style={{ height: '70vh' }}
             />
             {selectedEvent && (
                 <EventModal event={selectedEvent} isOpen={isOpen} onClose={() => setIsOpen(false)} />
