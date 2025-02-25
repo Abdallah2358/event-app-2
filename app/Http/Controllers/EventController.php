@@ -124,7 +124,7 @@ class EventController extends Controller
         ]);
         $event->wait_list_capacity -= 1;
         $event->save();
-        return to_route('event.index')->with('success', 'You have joined the event wait list.');
+        return to_route('events.index')->with('success', 'You have joined the event wait list.');
     }
 
     /**
