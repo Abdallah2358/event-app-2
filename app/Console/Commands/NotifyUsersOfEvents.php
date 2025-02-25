@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Mail\JoinEventConfirmation;
+use App\Mail\SameDayEventReminder;
 use App\Models\Event;
 use Illuminate\Console\Command;
 use Carbon\Carbon;
@@ -37,14 +38,9 @@ class NotifyUsersOfEvents extends Command
             ->get();
         foreach ($eventsToday as $event) {
             $users = $event->users;
+            
             foreach ($users as $user) {
-                $user->notify(
-                    NovaNotification::make()
-                        ->message('Event ' . $event->name . ' starts at ' . $event->start_time . ' today !!')                        ->action('View', URL::remote((route('nova.pages.detail', ['events', $event->id]))))
-                        ->icon('calendar')
-                        ->type('info')
-                );
-                // Mail::to($user)->send(new JoinEventConfirmation(event: $event, user: $user));
+                Mail::to($user)->send(new SameDayEventReminder(event: $event, user: $user));
             }
         }
         // echo $eventsToday;
