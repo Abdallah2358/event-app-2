@@ -28,18 +28,14 @@ export default function CalendarView({ events }) {
     const eventPropGetter = (event) => {
         let backgroundColor = ''; // Default color
 
-        if (event.joined) {
-            backgroundColor = 'green'; // Joined events → Green
-        } else if (event.on_wait_list) {
-            backgroundColor = 'yellow'; // Waitlisted events → Yellow
-        } else {
-            backgroundColor = 'lightgray'; // Default event color
+        if (event.on_wait_list) {
+            backgroundColor = 'orange'; // Waitlisted events → Yellow
+        } else if (event.joined) {
+            backgroundColor = 'darkgreen'; // Joined events → Green
         }
-
         return {
             style: {
                 backgroundColor,
-                color: 'black', // Ensures text is readable
                 borderRadius: '5px',
                 padding: '5px',
             },
@@ -90,6 +86,7 @@ export default function CalendarView({ events }) {
     }
     return (
         <div className="p-4 bg-white shadow-lg rounded-lg">
+
             <Calendar
                 events={formattedEvents}
                 localizer={localizer}

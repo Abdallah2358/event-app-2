@@ -52,6 +52,6 @@ class User extends Authenticatable
      */
     public function events(): BelongsToMany
     {
-        return $this->belongsToMany(Event::class, 'event_user');
+        return $this->belongsToMany(Event::class, 'event_user')->withPivot('is_on_wait_list');
     }
 }
