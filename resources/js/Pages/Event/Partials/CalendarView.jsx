@@ -8,6 +8,7 @@ import {
 } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import EventModal from './EventModal';
+import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
 
 // Set up Moment.js as the localizer
 const localizer = momentLocalizer(moment);
@@ -86,7 +87,9 @@ export default function CalendarView({ events }) {
     }
     return (
         <div className="p-4 bg-white shadow-lg rounded-lg">
+            map
 
+            cal
             <Calendar
                 events={formattedEvents}
                 localizer={localizer}

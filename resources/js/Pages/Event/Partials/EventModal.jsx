@@ -3,7 +3,7 @@ import { formatDate } from "@/src/utils/date";
 import { useForm, usePage } from "@inertiajs/react";
 import { useState } from "react";
 import { toast } from 'react-hot-toast';
-
+import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
 export default function EventModal({ event, isOpen, onClose }) {
     const [joined, setJoined] = useState(false);
     // const { flash } = usePage().props; // Get flash messages
@@ -65,6 +65,9 @@ export default function EventModal({ event, isOpen, onClose }) {
         setJoined(false);
         console.log("Cancelled event:", event.name);
     };
+    // const position = [51.505, -0.09]
+    // const map = L.map('map').setView([51.505, -0.09], 13);
+    console.log((event.location.coordinates));
 
     return (
         <Modal show={isOpen} onClose={onClose} maxWidth="lg">
@@ -78,6 +81,31 @@ export default function EventModal({ event, isOpen, onClose }) {
                 <p className={`mt-2 text-sm font-semibold ${event.status === "live" ? "text-green-600" : "text-gray-500"}`}>
                     Status: {event.status}
                 </p>
+                {/* <Map
+                    mapboxAccessToken="<Mapbox access token>"
+                    initialViewState={{
+                        longitude: -122.4,
+                        latitude: 37.8,
+                        zoom: 14
+                    }}
+                    style={{ width: 600, height: 400 }}
+                    mapStyle="mapbox://styles/mapbox/streets-v9"
+                /> */}
+
+                {event?.location?.coordinates && (
+                    <MapContainer center={[event.location.coordinates[1], event.location.coordinates[0]]} zoom={13} scrollWheelZoom={false}>
+                        <TileLayer
+                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        />
+                        <Marker position={[event.location.coordinates[1], event.location.coordinates[0]]}>
+                            <Popup>
+                                A pretty CSS3 popup. <br /> Easily customizable.
+                            </Popup>
+                        </Marker>
+                    </MapContainer>
+                )}
+
 
                 <div className="mt-4 flex gap-3">
                     {!joined ? (
