@@ -44,6 +44,7 @@ class JoinEventConfirmation extends Mailable
         return new Content(
             view: 'emails.join-event-confirmation',
             with: [
+                
                 'latitude' => $this->event->location->latitude,
                 'longitude' => $this->event->location->longitude,
             ],

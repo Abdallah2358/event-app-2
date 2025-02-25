@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>You're in! 🎉</title>
+    <title>Event Reminder ⏳</title>
     <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" type="text/css">
     <style>
         body {
@@ -26,7 +26,7 @@
         }
 
         .header {
-            background-color: #4f46e5;
+            background-color: #eab308;
             color: white;
             padding: 20px;
             border-radius: 12px 12px 0 0;
@@ -54,10 +54,10 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎉 Welcome, {{ $user->name }}!</h1>
+            <h1>⏳ Hey, {{ $user->name }}!</h1>
         </div>
-        <p>You've successfully joined <strong>{{ $event->name }}</strong>! 🚀</p>
-        <p>Here are the event details:</p>
+        <p>Just a friendly reminder that <strong>{{ $event->name }}</strong> is happening <strong>TODAY!</strong> 🚀</p>
+        <p>Don't forget the details:</p>
         <p><strong>📅 Date:</strong> {{ \Carbon\Carbon::parse($event->start_date)->format('F j, Y') }}</p>
         <p><strong>📍 Location:</strong>
             <a href="https://www.google.com/maps?q={{ $latitude }},{{$longitude}}" target="_blank">Open in Google Maps</a>
@@ -65,7 +65,7 @@
         <p><strong>⏰ Time:</strong> {{ \Carbon\Carbon::parse($event->start_time)->format('h:i A') }}</p>
 
 
-        <p class="footer">Thank you for joining! See you there! 🎊</p>
+        <p class="footer">Looking forward to seeing you there! 🎉</p>
     </div>
 </body>
 

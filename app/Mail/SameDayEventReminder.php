@@ -4,6 +4,7 @@ namespace App\Mail;
 
 use App\Models\Event;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -31,7 +32,7 @@ class SameDayEventReminder extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Event ' . $this->event->name . ' is today at ' . $this->event->start_time,
+            subject: 'Reminder: Event ' . $this->event->name . ' is today at ' . Carbon::parse($this->event->start_time)->format('h:i A'),
         );
     }
 
@@ -41,7 +42,7 @@ class SameDayEventReminder extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.join-event-confirmation',
+            view: 'emails.event-reminder',
             with: [
                 'title' => 'This is a Gentle Reminder of Event ' . $this->event->name,
                 'latitude' => $this->event->location->latitude,
