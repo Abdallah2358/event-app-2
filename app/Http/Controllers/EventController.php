@@ -150,6 +150,11 @@ class EventController extends Controller
         // }
         // return ActionResponse::danger('Can only join Live Events');
     }
+    public function join_wait_list(JoinEventRequest $request, Event $event)
+    {
+        dd('join_wait_list');
+        dd($event);
+    }
 
     /**
      * User Leave Event

@@ -17,7 +17,7 @@ class CheckEventAvailability
     {
         $event = $request->route('event');
         if ($event->status === 'draft') {
-            return back()
+            return to_route('event.index')
                 ->withErrors(['not_available' => 'Event is not available.']);
         }
         return $next($request);

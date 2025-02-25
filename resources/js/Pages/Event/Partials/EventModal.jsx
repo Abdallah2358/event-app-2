@@ -15,20 +15,39 @@ export default function EventModal({ event, isOpen, onClose }) {
         post(route('event.join', event.id), {
             onSuccess: (data) => {
                 onClose();
-                console.log(data);
-                console.log(flash);
+                console.log('data', data);
+                console.log('flash', flash);
                 if (flash?.success) {
                     toast.success(flash.success);
                 }
             },
-            onError: (data) => {
+            onError: (errors) => {
                 onClose();
-
-                if (data?.already_joined) {
-                    toast.error(data.already_joined);
+                if (errors?.already_joined) {
+                    return toast.error(errors.already_joined);
                 }
-                if (data?.event_full) {
-                    toast.error(data.event_full);
+                if (errors?.not_available) {
+                    return toast.error(errors.not_available);
+                }
+                if (errors?.no_capacity) {
+                    toast.error(errors.no_capacity);
+                    toast.loading("Joining wait list...", { id: "wait-list" });
+                    post(route('event.join-wait-list', event.id), {
+                        onSuccess: () => {
+                            toast.success("You've been added to the wait list!", { id: "waitlist" });
+                        },
+                        onError: (errors) => {
+                            if (errors?.already_joined) {
+                                return toast.error(errors.already_joined, { id: "wait-list" });
+                            }
+                            if (errors?.not_available) {
+                                toast.error(errors.not_available, { id: "wait-list" });
+                            }
+                            if (errors?.no_wait_list_capacity) {
+                                toast.error(errors.no_wait_list_capacity, { id: "wait-list" });
+                            }
+                        }
+                    });
                 }
             },
             // errorBag: 'joinEvent',
