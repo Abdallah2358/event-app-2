@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import {
@@ -25,10 +25,10 @@ export default function CalendarView({ events }) {
     const formattedEvents = useMemo(() => formatEvents(events, currentView), [events, currentView]);
     const [isOpen, setIsOpen] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState(null);
-    function handleEventSelect(event) {
+    const handleEventSelect = useCallback((event) => {
         setSelectedEvent({ ...event });
         setIsOpen(true);
-    }
+    }, []);
     return (
         <div className="p-4 bg-white shadow-lg rounded-lg">
             <Calendar
