@@ -43,10 +43,10 @@ class JoinEventConfirmation extends Mailable
     {
         return new Content(
             view: 'emails.join-event-confirmation',
-            with: ['event_address' => $this->getAddressFromLatLongOSM(
-                $this->event->location->latitude,
-                $this->event->location->longitude,
-            )],
+            with: [
+                'latitude' => $this->event->location->latitude,
+                'longitude' => $this->event->location->longitude,
+            ],
         );
     }
 
@@ -58,23 +58,5 @@ class JoinEventConfirmation extends Mailable
     public function attachments(): array
     {
         return [];
-    }
-    function getAddressFromLatLongOSM($latitude, $longitude)
-    {
-        # ToDo : fix ssl issue
-        $response = Http::withoutVerifying()->get("https://nominatim.openstreetmap.org/reverse", [
-            'lat' => $latitude,
-            'lon' => $longitude,
-            'format' => 'json'
-        ]);
-
-        $data = $response->json();
-
-        if (!empty($data['display_name'])) {
-            return $data['display_name']; // Return the found address
-        }
-
-        // If address lookup fails, return a clickable Google Maps link
-        return '<a href="https://www.google.com/maps?q=' . $latitude . ',' . $longitude . '" target="_blank">Open in Google Maps</a>';
     }
 }
