@@ -29,6 +29,9 @@ export default function EventModal({ event, isOpen, onClose }) {
                 if (errors?.not_available) {
                     return toast.error(errors.not_available);
                 }
+                if (errors?.overlaps_with_other_events) {
+                    return toast.error(errors.overlaps_with_other_events);
+                }
                 if (errors?.no_capacity) {
                     toast.error(errors.no_capacity);
                     toast.loading("Joining wait list...", { id: "wait-list" });
@@ -37,6 +40,9 @@ export default function EventModal({ event, isOpen, onClose }) {
                             toast.success("You've been added to the wait list!", { id: "waitlist" });
                         },
                         onError: (errors) => {
+                            if (errors?.overlaps_with_other_events) {
+                                return toast.error(errors.overlaps_with_other_events, { id: "wait-list" });
+                            }
                             if (errors?.already_joined) {
                                 return toast.error(errors.already_joined, { id: "wait-list" });
                             }
