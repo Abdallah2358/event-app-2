@@ -17,7 +17,7 @@ class eventHasCapacity
     {
         $event = $request->route('event');
         if ($event->capacity === 0 && $event->wait_list_capacity > 0) {
-            return to_route('event.join-wait-list', $event);
+            return back()->withErrors(['no_capacity' => 'Event is at full capacity.']);
         }
         return $next($request);
     }
