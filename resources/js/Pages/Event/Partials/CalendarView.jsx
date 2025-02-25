@@ -9,6 +9,7 @@ import {
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import EventModal from './EventModal';
 import { formatEvents } from '../utils/calendarUtils';
+import { eventPropGetter } from '../utils/eventStyles';
 
 // Set up Moment.js as the localizer
 const localizer = momentLocalizer(moment);
@@ -21,25 +22,6 @@ export default function CalendarView({ events }) {
         views: ['month', 'week', 'day'], // Ensure Month view is included
     }), []);
     const [currentView, setCurrentView] = useState(Views.MONTH); // Default view is Month
-
-    // Function to determine event color
-    const eventPropGetter = (event) => {
-        let backgroundColor = ''; // Default color
-
-        if (event.on_wait_list) {
-            backgroundColor = 'orange'; // Waitlisted events → Yellow
-        } else if (event.joined) {
-            backgroundColor = 'darkgreen'; // Joined events → Green
-        }
-        return {
-            style: {
-                backgroundColor,
-                borderRadius: '5px',
-                padding: '5px',
-            },
-        };
-    };
-
     const formattedEvents = useMemo(() => formatEvents(events, currentView), [events, currentView]);
     const [isOpen, setIsOpen] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState(null);
@@ -60,7 +42,6 @@ export default function CalendarView({ events }) {
                 onSelectEvent={handleEventSelect}
                 style={{ height: '70vh' }}
                 eventPropGetter={eventPropGetter} // Apply event colors
-
             />
             {selectedEvent && (
                 <EventModal event={selectedEvent} isOpen={isOpen} onClose={() => setIsOpen(false)} />
