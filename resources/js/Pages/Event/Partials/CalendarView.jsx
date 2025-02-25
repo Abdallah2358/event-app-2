@@ -8,7 +8,7 @@ import {
 } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import EventModal from './EventModal';
-import {  formatEvents } from '../utils/calendarUtils';
+import { formatEvents } from '../utils/calendarUtils';
 
 // Set up Moment.js as the localizer
 const localizer = momentLocalizer(moment);
@@ -40,7 +40,7 @@ export default function CalendarView({ events }) {
         };
     };
 
-    const formattedEvents = formatEvents(events, currentView);
+    const formattedEvents = useMemo(() => formatEvents(events, currentView), [events, currentView]);
     const [isOpen, setIsOpen] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState(null);
     function handleEventSelect(event) {
