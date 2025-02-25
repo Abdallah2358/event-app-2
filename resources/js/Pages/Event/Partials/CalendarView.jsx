@@ -8,15 +8,12 @@ import {
 } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import EventModal from './EventModal';
-import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
+import {  formatEvents } from '../utils/calendarUtils';
 
 // Set up Moment.js as the localizer
 const localizer = momentLocalizer(moment);
 
-// Function to combine date and time into a JavaScript Date object
-const combineDateTime = (dateStr, timeStr) => {
-    return moment(`${dateStr} ${timeStr}`, 'YYYY-MM-DD HH:mm:ss').toDate();
-};
+
 
 export default function CalendarView({ events }) {
     // Memoized values for performance optimization
@@ -42,43 +39,8 @@ export default function CalendarView({ events }) {
             },
         };
     };
-    const formatEvent = (event, options = 'single') => {
-        event['allDay'] = false;
-        event['start'] = combineDateTime(event.start_date, event.start_time);
-        event['end'] = combineDateTime(event.end_date, event.end_time);
-        return event;
-    }
-    // Convert Laravel events into the correct format
-    // Function to properly format multi-day events
-    const formatEvents = (events) => {
-        return events.flatMap(event => {
-            const startTime = event.start_time;
-            const endTime = event.end_time;
-            const startDate = moment(`${event.start_date} ${startTime}`, 'YYYY-MM-DD HH:mm:ss');
-            const endDate = moment(`${event.end_date} ${endTime}`, 'YYYY-MM-DD HH:mm:ss');
-            if (startDate.isSame(endDate, 'day')) {
-                // Single-day event
-                return [formatEvent(event)];
-            } else {
-                // Multi-day event → Break it into separate day-long entries
-                let currentDate = startDate.clone();
-                let multiDayEvents = [];
-                if (currentView == 'month') {
-                    multiDayEvents.push(formatEvent(event))
-                } else {
-                    while (currentDate.isSameOrBefore(endDate, 'day')) {
-                        const eventDay = { ...formatEvent(event) };
-                        eventDay['start'] = combineDateTime(currentDate.format('YYYY-MM-DD'), startTime);
-                        eventDay['end'] = combineDateTime(currentDate.format('YYYY-MM-DD'), endTime);
-                        multiDayEvents.push(eventDay);
-                        currentDate.add(1, 'day');
-                    }
-                }
-                return multiDayEvents;
-            }
-        });
-    };
-    const formattedEvents = formatEvents(events);
+
+    const formattedEvents = formatEvents(events, currentView);
     const [isOpen, setIsOpen] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState(null);
     function handleEventSelect(event) {
@@ -87,9 +49,6 @@ export default function CalendarView({ events }) {
     }
     return (
         <div className="p-4 bg-white shadow-lg rounded-lg">
-            map
-
-            cal
             <Calendar
                 events={formattedEvents}
                 localizer={localizer}
