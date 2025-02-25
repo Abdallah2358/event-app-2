@@ -30,11 +30,11 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::resource('/events', EventController::class);
     Route::post('/events/{event}/join', [EventController::class, 'join'])
-        ->name('event.join')
+        ->name('events.join')
         ->middleware(CheckEventAvailability::class)
         ->middleware(eventHasCapacity::class);
     Route::post('/events/{event}/join-wait-list', [EventController::class, 'join_wait_list'])
-        ->name('event.join-wait-list')
+        ->name('events.join-wait-list')
         ->middleware(CheckEventAvailability::class)
         ->middleware(eventHasWaitListCapacity::class);
 });

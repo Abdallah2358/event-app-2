@@ -12,7 +12,7 @@ export default function EventModal({ event, isOpen, onClose }) {
     event.start_date = formatDate(event.start_date);
     event.end_date = formatDate(event.end_date);
     const handleJoin = () => {
-        post(route('event.join', event.id), {
+        post(route('events.join', event.id), {
             onSuccess: (data) => {
                 onClose();
                 console.log('data', data);
@@ -35,7 +35,7 @@ export default function EventModal({ event, isOpen, onClose }) {
                 if (errors?.no_capacity) {
                     toast.error(errors.no_capacity);
                     toast.loading("Joining wait list...", { id: "wait-list" });
-                    post(route('event.join-wait-list', event.id), {
+                    post(route('events.join-wait-list', event.id), {
                         onSuccess: () => {
                             toast.success("You've been added to the wait list!", { id: "waitlist" });
                         },
