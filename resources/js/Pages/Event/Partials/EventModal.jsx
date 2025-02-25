@@ -37,7 +37,7 @@ export default function EventModal({ event, isOpen, onClose }) {
                     toast.loading("Joining wait list...", { id: "wait-list" });
                     post(route('events.join-wait-list', event.id), {
                         onSuccess: () => {
-                            toast.success("You've been added to the wait list!", { id: "waitlist" });
+                            toast.success("You've been added to the wait list!", { id: "wait-list" });
                         },
                         onError: (errors) => {
                             if (errors?.overlaps_with_other_events) {
