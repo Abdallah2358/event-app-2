@@ -140,8 +140,8 @@
                                                                 <div
                                                                     style="color:#ffffff;font-family:Montserrat, Trebuchet MS, Lucida Grande, Lucida Sans Unicode, Lucida Sans, Tahoma, sans-serif;font-size:30px;line-height:120%;text-align:center;mso-line-height-alt:36px;">
                                                                     <p style="margin: 0; word-break: break-word;"><span
-                                                                            style="word-break: break-word;"><strong>THANK
-                                                                                YOU FOR Joining</strong></span></p>
+                                                                            style="word-break: break-word;"><strong>{{ $title? $title: 'THANK
+                                                                                YOU FOR Joining' }}</strong></span></p>
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -288,7 +288,7 @@
                                                                         </td>
                                                                         <td
                                                                             style="font-family: 'Montserrat', 'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif; font-size: 16px; font-weight: undefined; color: #ffffff; vertical-align: middle; letter-spacing: undefined; text-align: left; line-height: normal;">
-                                                                            {!! $event_address !!}
+                                                                            <a href="https://www.google.com/maps?q='{{ $latitude }}','{{$longitude}}'" target="_blank">Open in Google Maps</a>
                                                                         </td>
                                                                     </tr>
                                                                 </table>
