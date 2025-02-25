@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\JoinEventRequest;
+use App\Mail\JoinEventConfirmation;
 use App\Models\Event;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -79,8 +81,13 @@ class EventController extends Controller
     public function join(JoinEventRequest $request, Event $event)
     {
 
-        $user = auth()->user();
+        $user = $request->user();
         $event->users()->attach($user);
+        $event->capacity -= 1;
+        $event->save();
+        Mail::to($user->email)
+            ->send(new JoinEventConfirmation(event: $event, user: $user));
+
 
         return redirect()->back()->with('success', 'You have successfully joined the event.');
         // return Inertia:: ['Event' => 'joined'];
