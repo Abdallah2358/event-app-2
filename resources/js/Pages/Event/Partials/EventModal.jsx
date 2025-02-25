@@ -4,75 +4,73 @@ import PrimaryButton from "@/Components/PrimaryButton";
 import SecondaryButton from "@/Components/SecondaryButton";
 import { formatDate } from "@/src/utils/date";
 import { useForm, usePage } from "@inertiajs/react";
-import { useMemo, useState } from "react";
+import { useMemo, useCallback } from "react";
 import { toast } from 'react-hot-toast';
-import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
+import { handleJoinErrors } from "../utils/errorUtils";
 
 /**
  * EventModal Component - Displays event details in a modal, allowing users to join or leave an event.
  *
+ * @component
  * @param {Object} props - Component props
- * @param {Object} props.event - Event details
- * @param {boolean} props.isOpen - Whether the modal is open
- * @param {Function} props.onClose - Function to close the modal
+ * @param {Object} props.event - Event details including title, dates, status, and location.
+ * @param {boolean} props.isOpen - Determines if the modal is open.
+ * @param {Function} props.onClose - Callback function to close the modal.
  */
 export default function EventModal({ event, isOpen, onClose }) {
-    const [joined, setJoined] = useState(false);
+    const { flash } = usePage().props; // Extract flash messages from Inertia.js props
+    const { post } = useForm(); // Initialize Inertia.js form handler
 
-    // Extract errors and flash messages from Inertia.js
-    const { flash } = usePage().props;
-    const { post } = useForm();
-    event = useMemo(() => ({
+    /**
+     * Formats event dates to a user-friendly format.
+     * Memoized to avoid unnecessary recalculations.
+     */
+    const formattedEvent = useMemo(() => ({
         ...event,
         start_date: formatDate(event.start_date),
         end_date: formatDate(event.end_date),
     }), [event]);
 
-    const handleJoinErrors = (errors) => {
-        if (errors?.already_joined) return toast.error(errors.already_joined);
-        if (errors?.not_available) return toast.error(errors.not_available);
-        if (errors?.overlaps_with_other_events) return toast.error(errors.overlaps_with_other_events);
-        return null;
-    };
     /**
-     * Handles joining an event.
-     * Posts a request to join and provides user feedback via toast notifications.
+     * Handles joining an event by sending a request to the backend.
+     * Displays success or error messages accordingly.
+     * Memoized using useCallback to avoid unnecessary re-creations.
      */
-    const handleJoin = () => {
+    const handleJoin = useCallback(() => {
         post(route('events.join', event.id), {
-            onSuccess: (data) => {
-                onClose(); // Close modal on success
-                console.log('data', data);
-                console.log('flash', flash);
-                if (flash?.success) {
-                    toast.success(flash.success);
-                }
+            onSuccess: () => {
+                onClose(); // Close modal on successful join
+                if (flash?.success) toast.success(flash.success);
             },
             onError: (errors) => {
-                onClose();
+                onClose(); // Close modal if there's an error
+
+                // Handle all errors other than capacity
                 if (handleJoinErrors(errors)) return;
+
+                // If event is full, attempt to join the waitlist
                 if (errors?.no_capacity) {
                     toast.error(errors.no_capacity);
                     toast.loading("Joining waitlist...", { id: "wait-list" });
 
-                    // Attempt to join the waitlist if the event is full
-                    // Attempt to join the waitlist
                     post(route('events.join-wait-list', event.id), {
                         onSuccess: () => toast.success("You've been added to the waitlist!", { id: "wait-list" }),
-                        onError: (errors) => { toast.dismiss({ id: "wait-list" }); handleJoinErrors(errors); }, // Reuse the same function
+                        onError: (errors) => {
+                            toast.dismiss("wait-list");
+                            handleJoinErrors(errors); // Handle waitlist errors
+                        },
                     });
                 }
             }
         });
-    };
-
+    }, [event, onClose, flash, post]);
 
     return (
         <Modal show={isOpen} onClose={onClose} maxWidth="lg">
             <div className="p-6">
                 {/* Event Title & Date */}
-                <h2 className="text-2xl font-bold">{event.title}</h2>
-                <p className="text-gray-600">{event.start_date} - {event.end_date}</p>
+                <h2 className="text-2xl font-bold">{formattedEvent.title}</h2>
+                <p className="text-gray-600">{formattedEvent.start_date} - {formattedEvent.end_date}</p>
                 <p className="text-gray-600">{event.start_time} - {event.end_time}</p>
 
                 {/* Event Details */}
@@ -84,24 +82,12 @@ export default function EventModal({ event, isOpen, onClose }) {
                 </p>
 
                 {/* Display event location if available */}
-                {event?.location?.coordinates && (
-                    <EventMap coordinates={event.location.coordinates} title={event.title} />
-                )}
+                {event?.location?.coordinates && <EventMap coordinates={event.location.coordinates} title={event.title} />}
 
                 {/* Action Buttons */}
                 <div className="mt-4 flex justify-end gap-3">
-                    <PrimaryButton
-                        onClick={handleJoin}
-                        className=""
-                    >
-                        Join Event
-                    </PrimaryButton>
-                    <SecondaryButton
-                        onClick={onClose}
-                        className=""
-                    >
-                        Close
-                    </SecondaryButton>
+                    <PrimaryButton onClick={handleJoin}>Join Event</PrimaryButton>
+                    <SecondaryButton onClick={onClose}>Close</SecondaryButton>
                 </div>
             </div>
         </Modal>
