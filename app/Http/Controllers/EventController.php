@@ -152,8 +152,13 @@ class EventController extends Controller
     }
     public function join_wait_list(JoinEventRequest $request, Event $event)
     {
-        dd('join_wait_list');
-        dd($event);
+        $user = $request->user();
+        $event->users()->attach($user, [
+            'is_on_wait_list' => true
+        ]);
+        $event->wait_list_capacity -= 1;
+        $event->save();
+        return to_route('event.index')->with('success', 'You have joined the event wait list.');
     }
 
     /**
