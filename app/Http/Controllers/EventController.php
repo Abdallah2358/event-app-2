@@ -17,10 +17,27 @@ class EventController extends Controller
      */
     public function index()
     {
-        $events = Event::where('status', 'live')->get()->map(function ($event) {
-            $event['title'] = $event->name;
-            return $event;
-        });
+        $user = auth()->user(); // Get the authenticated user
+
+        $events = Event::where('status', 'live')
+            ->with(['users' => function ($query) use ($user) {
+                $query->where('user_id', $user->id); // Get only the current user’s pivot data
+            }])
+            ->get()
+            ->map(function ($event) use ($user) {
+                $event['title'] = $event->name;
+
+                if ($user) {
+                    $userEvent = $event->users->first(); // Get the logged-in user's relation
+                    $event['joined'] = $userEvent !== null;
+                    $event['on_wait_list'] = $userEvent ? $userEvent->pivot->on_wait_list : false;
+                } else {
+                    $event['joined'] = false;
+                    $event['on_wait_list'] = false;
+                }
+
+                return $event;
+            });
 
         return Inertia::render('Event/Index', [
             'events' => $events
@@ -80,7 +97,6 @@ class EventController extends Controller
      */
     public function join(JoinEventRequest $request, Event $event)
     {
-
         $user = $request->user();
         $event->users()->attach($user);
         $event->capacity -= 1;

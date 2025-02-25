@@ -23,6 +23,28 @@ export default function CalendarView({ events }) {
         views: ['month', 'week', 'day'], // Ensure Month view is included
     }), []);
     const [currentView, setCurrentView] = useState(Views.MONTH); // Default view is Month
+
+    // Function to determine event color
+    const eventPropGetter = (event) => {
+        let backgroundColor = ''; // Default color
+
+        if (event.joined) {
+            backgroundColor = 'green'; // Joined events → Green
+        } else if (event.on_wait_list) {
+            backgroundColor = 'yellow'; // Waitlisted events → Yellow
+        } else {
+            backgroundColor = 'lightgray'; // Default event color
+        }
+
+        return {
+            style: {
+                backgroundColor,
+                color: 'black', // Ensures text is readable
+                borderRadius: '5px',
+                padding: '5px',
+            },
+        };
+    };
     const formatEvent = (event, options = 'single') => {
         event['allDay'] = false;
         event['start'] = combineDateTime(event.start_date, event.start_time);
@@ -78,6 +100,8 @@ export default function CalendarView({ events }) {
                 popup={true}
                 onSelectEvent={handleEventSelect}
                 style={{ height: '70vh' }}
+                eventPropGetter={eventPropGetter} // Apply event colors
+
             />
             {selectedEvent && (
                 <EventModal event={selectedEvent} isOpen={isOpen} onClose={() => setIsOpen(false)} />
